@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using RetrivePatternFromFile.Utils;
 
 namespace RetrivePatternFromFile
 {
@@ -12,9 +13,10 @@ namespace RetrivePatternFromFile
         {
 
 
-            LoadAppsettingValuesFromSomewhere();
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
-                .Build();
+           var jsonString =  LoadAppsettingValuesFromSomewhere();
+           var memoryFileProvider = new InMemoryFileProvider(jsonString);
+           var configuration = new ConfigurationBuilder()
+               .AddJsonFile(memoryFileProvider, "appsettingsss.json", false, false).Build();
 
             string keyFromappsettings = configuration["MyKey"];
 
@@ -22,7 +24,7 @@ namespace RetrivePatternFromFile
         }
 
 
-        private static void LoadAppsettingValuesFromSomewhere()
+        private static string LoadAppsettingValuesFromSomewhere()
         {
             //The pattern that the values to be replaced are going to follow on the appsettings file
             string pattern = @"__\w+__";
@@ -42,8 +44,7 @@ namespace RetrivePatternFromFile
                 settingFile = settingFile.Replace(wordToReplace, value);
             }
 
-            //Rewrite all the changes on the appsetings
-            File.WriteAllText("appsettings.json", settingFile);
+            return settingFile;
         }
 
         private static string GetValueFromSomewhere(string key)
@@ -59,4 +60,5 @@ namespace RetrivePatternFromFile
                     webBuilder.UseStartup<Startup>();
                 });
     }
+
 }
