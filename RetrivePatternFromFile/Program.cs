@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace RetrivePatternFromFile
@@ -12,6 +13,10 @@ namespace RetrivePatternFromFile
 
 
             LoadAppsettingValuesFromSomewhere();
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+                .Build();
+
+            string keyFromappsettings = configuration["MyKey"];
 
             CreateHostBuilder(args).Build().Run();
         }
